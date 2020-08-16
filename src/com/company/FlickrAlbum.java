@@ -6,21 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+import static com.company.CommonHelperMethods.getURLInput;
 import static com.company.CommonHelperMethods.parseIdFromURL;
 import static com.company.FlickrAPIEndpoints.listAlbumPhotos;
 import static com.company.FlickrAPIEndpoints.lookupUser;
 
-public class AlbumActions {
+public class FlickrAlbum {
 
     public void batchDownloadAlbum() {
-        Scanner albumUrlPrompt = new Scanner(System.in);
-        System.out.println("Please provide a album url: ");
-        String albumURL = albumUrlPrompt.next();
-        if (!validateAlbumUrl(albumURL)){
-            //TODO Album url validation
-            System.out.println("Invalid album URL.");
-            return;
-        }
+        String albumURL = getURLInput();
         try {
             String userId = lookupUser(albumURL);
             String albumId = parseIdFromURL(albumURL);

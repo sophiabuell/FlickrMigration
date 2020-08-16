@@ -7,8 +7,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         boolean running = true;
-        CollectionActions collectionActions = new CollectionActions();
-        AlbumActions albumActions = new AlbumActions();
         while(running) {
             System.out.println("Please choose an option: ");
             System.out.println("[0] export collection metadata to CSV");
@@ -17,10 +15,12 @@ public class Main {
             int choice = input.nextInt();
             switch (choice) {
                 case 0:
-                    collectionActions.extractCollectionInfo();
+                    FlickrCollection flickrCollection = new FlickrCollection();
+                    flickrCollection.extractCollectionInfo();
                     break;
                 case 1:
-                    albumActions.batchDownloadAlbum();
+                    FlickrAlbum flickrAlbum = new FlickrAlbum();
+                    flickrAlbum.batchDownloadAlbum();
                     break;
                 case 2:
                     System.out.println("Thanks for playing come again soon!");

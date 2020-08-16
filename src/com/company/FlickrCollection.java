@@ -9,23 +9,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.company.CommonHelperMethods.getURLInput;
 import static com.company.CommonHelperMethods.parseIdFromURL;
 import static com.company.FlickrAPIEndpoints.listAlbumPhotos;
 import static com.company.FlickrAPIEndpoints.getCollectionTree;
 import static com.company.FlickrAPIEndpoints.lookupUser;
 
-public class CollectionActions {
+public class FlickrCollection {
 
     public void extractCollectionInfo() {
-        Scanner collectionURLPrompt = new Scanner(System.in);
-        System.out.println("Please provide a collection url: ");
-        String collectionURL = collectionURLPrompt.next();
-
-        if (!validateCollectionURL(collectionURL)){
-            // TODO Collection url validation
-            System.out.println("Invalid collection URL.");
-            return;
-        }
+        String collectionURL = getURLInput();
 
         try {
             String userId = lookupUser(collectionURL);
@@ -37,10 +30,6 @@ public class CollectionActions {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean validateCollectionURL(String collectionURL) {
-        return true;
     }
 
     private ArrayList<PhotoAsset> extractAssetInfo(String collectionJson, String userId) throws IOException {
@@ -67,6 +56,7 @@ public class CollectionActions {
         System.out.println("DONE.");
         return assetsInfo;
     }
+
     public void writeCSV(String collectionId, ArrayList<PhotoAsset> assets) throws IOException {
 
         // CREATE AND WRITE FILE
@@ -83,10 +73,11 @@ public class CollectionActions {
             // Write csv template line
             writer.write("id, created, title, width, height, url \n");
 
-            // Write data line for each asset
             System.out.println(String.format("Writing assets to file %s...", metadataFile.getName()));
             int assetCount = 1;
+
             for (PhotoAsset asset : assets) {
+                // Write data line for each asset
                 System.out.println(String.format("    Writing asset %d of %d...", assetCount, assets.size()));
                 writer.write(asset.printCSVLine());
                 assetCount++;

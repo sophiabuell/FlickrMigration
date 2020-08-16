@@ -56,6 +56,7 @@ public class FlickrAPIEndpoints {
                 API_KEY_PARAM, API_KEY_VALUE,
                 URL_PARAM, assetURL,
                 FORMAT_JSON));
+
         String response = getAndParseResponse(url);
 
         // Parse out userID from response
@@ -87,9 +88,9 @@ public class FlickrAPIEndpoints {
                 PHOTOSET_ID_PARAM, photoSetId,
                 USER_ID_PARAM, userId,
                 FORMAT_JSON));
+
         String response = getAndParseResponse(url);
         response = response.substring(14, response.length()-1);
-
         JSONObject photoSet = new JSONObject(response);
         return photoSet.getJSONObject("photoset").getJSONArray("photo");
     }
@@ -101,8 +102,8 @@ public class FlickrAPIEndpoints {
                 API_KEY_PARAM, API_KEY_VALUE,
                 PHOTO_ID_PARAM, id,
                 FORMAT_JSON));
-        String response = getAndParseResponse(url);
 
+        String response = getAndParseResponse(url);
         String jsonString = response.substring(14, response.length()-1);
         return new JSONObject(jsonString);
     }
@@ -116,6 +117,7 @@ public class FlickrAPIEndpoints {
                 API_KEY_PARAM, API_KEY_VALUE,
                 PHOTO_ID_PARAM, id,
                 FORMAT_JSON));
+
         String photoSizeResponse = getAndParseResponse(url);
         photoSizeResponse = photoSizeResponse.substring(14, photoSizeResponse.length()-1);
         return new JSONObject(photoSizeResponse);

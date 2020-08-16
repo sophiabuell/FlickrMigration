@@ -55,8 +55,4 @@ public class PhotoAsset {
         }
         return true;
     }
-
-    public String getUrl() {
-        return url;
-    }
 }
