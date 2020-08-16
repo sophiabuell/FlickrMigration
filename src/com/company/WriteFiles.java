@@ -8,14 +8,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.company.GrabUrls.grabSize;
+import static com.company.GrabUrls.grabPhotoSize;
 
 public class WriteFiles {
     public static String formatPhotoCSVLine(JSONObject asset) throws IOException {
         JSONObject photo = asset.getJSONObject("photo");
 
         // Get Height and Width
-        String response = grabSize(photo.getString("id"));
+        String response = grabPhotoSize(photo.getString("id"));
         String jsonString = response.substring(14, response.length()-1);
         JSONArray photoSizes = new JSONObject(jsonString).getJSONObject("sizes").getJSONArray("size");
         JSONObject size = photoSizes.getJSONObject(photoSizes.length()-1);

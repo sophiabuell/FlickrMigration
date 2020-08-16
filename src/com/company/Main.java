@@ -1,16 +1,8 @@
 package com.company;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import static com.company.GrabUrls.grabCollectionMetadata;
-import static com.company.GrabUrls.grabUserId;
-import static com.company.Helpers.grabAssets;
-import static com.company.Helpers.parseCollectionURL;
-import static com.company.WriteFiles.writeAssets;
+import static com.company.CollectionActions.extractCollectionInfo;
 
 public class Main {
 
@@ -42,32 +34,22 @@ public class Main {
     }
 
     private static void batchDownloadAlbum() {
+        Scanner albumUrlPrompt = new Scanner(System.in);
+        System.out.println("Please provide a album url: ");
+        String albumURL = albumUrlPrompt.next();
+        if (!validateAlbumUrl(albumURL)){
+            //TODO Album url validation
+            System.out.println("Invalid album URL.");
+            return;
+        }
+
         //TODO Batch Download
     }
 
-    private static void extractCollectionInfo() {
-        Scanner collectionURLPrompt = new Scanner(System.in);
-        System.out.println("Please provide a collection url: ");
-        String collectionURL = collectionURLPrompt.next();
-
-        if (!validateCollectionURL(collectionURL)){
-            // TODO Collection url validation
-        }
-
-        try {
-            String userId = grabUserId(collectionURL);
-            String collectionId = parseCollectionURL(collectionURL);
-            String jsonInfo = grabCollectionMetadata(collectionURL, collectionId, userId);
-
-            ArrayList<JSONObject> assets = grabAssets(jsonInfo, userId);
-            writeAssets(collectionId, assets);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static boolean validateCollectionURL(String collectionURL) {
+    private static boolean validateAlbumUrl(String albumURL) {
         return true;
     }
+
+
 
 }

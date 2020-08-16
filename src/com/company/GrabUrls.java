@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class GrabUrls {
     private static final String API_KEY_VALUE = "ee684ec62c0fa830c6ce9d0847f50613";
@@ -78,7 +77,7 @@ public class GrabUrls {
         return jsonString;
     }
 
-    public static ArrayList<JSONObject> grabPhotoSetAssets(String photoSetId, String userId) throws IOException {
+    public static JSONArray grabPhotoSetAssets(String photoSetId, String userId) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, GET_PHOTOS,
@@ -90,18 +89,10 @@ public class GrabUrls {
         response = response.substring(14, response.length()-1);
 
         JSONObject photoSet = new JSONObject(response);
-        JSONArray photos = photoSet.getJSONObject("photoset").getJSONArray("photo");
-
-        ArrayList<JSONObject> assets = new ArrayList<>();
-
-        for (int i = 0; i < photos.length(); i++) {
-            String id = photos.getJSONObject(i).getString("id");
-            assets.add(grabPhotoInfo(id));
-        }
-        return assets;
+        return photoSet.getJSONObject("photoset").getJSONArray("photo");
     }
 
-    private static JSONObject grabPhotoInfo(String id) throws IOException {
+    public static JSONObject grabPhotoInfo(String id) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, PHOTOS_GET_INFO,
@@ -116,7 +107,7 @@ public class GrabUrls {
 
 
 
-    public static String grabSize(String id) throws IOException {
+    public static String grabPhotoSize(String id) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, PHOTOS_GET_SIZES,
