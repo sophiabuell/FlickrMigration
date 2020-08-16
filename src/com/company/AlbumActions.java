@@ -2,6 +2,7 @@ package com.company;
 
 import org.json.JSONArray;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -25,6 +26,11 @@ public class AlbumActions {
             String albumId = parseIdFromURL(albumURL);
             JSONArray assets = listAlbumPhotos(albumId, userId);
             System.out.println("Getting photos for album...");
+            File mediaFile = new File("media");
+            if (!mediaFile.exists()) {
+                mediaFile.mkdir();
+            }
+
             for (int i = 0; i < assets.length(); i++) {
                 System.out.print(String.format("Getting info for photo %d of %d... ", i, assets.length()));
                 String id = assets.getJSONObject(i).getString("id");
