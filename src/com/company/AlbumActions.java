@@ -10,6 +10,7 @@ import static com.company.GrabUrls.grabPhotoSetAssets;
 import static com.company.GrabUrls.grabUserId;
 
 public class AlbumActions {
+
     public void batchDownloadAlbum() {
         Scanner albumUrlPrompt = new Scanner(System.in);
         System.out.println("Please provide a album url: ");
@@ -19,13 +20,19 @@ public class AlbumActions {
             System.out.println("Invalid album URL.");
             return;
         }
-        String userId = null;
         try {
-            userId = grabUserId(albumURL);
+            String userId = grabUserId(albumURL);
             String albumId = parseIdFromURL(albumURL);
             JSONArray assets = grabPhotoSetAssets(albumId, userId);
-            // TODO: Use photoSize endpoint to get url for photo
-            // TODO: Download photo using photo url
+            System.out.println("Getting photos for album...");
+            for (int i = 0; i < assets.length(); i++) {
+                System.out.print(String.format("Getting info for photo %d of %d... ", i, assets.length()));
+                String id = assets.getJSONObject(i).getString("id");
+                PhotoAsset photoAsset = new PhotoAsset(id);
+                System.out.print("Downloading...");
+                photoAsset.download();
+                System.out.print("\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

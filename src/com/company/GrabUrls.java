@@ -107,13 +107,15 @@ public class GrabUrls {
 
 
 
-    public static String grabPhotoSize(String id) throws IOException {
+    public static JSONObject grabPhotoSize(String id) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, PHOTOS_GET_SIZES,
                 API_KEY_PARAM, API_KEY_VALUE,
                 PHOTO_ID_PARAM, id,
                 FORMAT_JSON));
-        return getResponse(url);
+        String photoSizeResponse = getResponse(url);
+        photoSizeResponse = photoSizeResponse.substring(14, photoSizeResponse.length()-1);
+        return new JSONObject(photoSizeResponse);
     }
 }
