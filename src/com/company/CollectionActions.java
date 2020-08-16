@@ -7,15 +7,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.company.CommonHelperMethods.parseIdFromURL;
 import static com.company.GrabUrls.grabPhotoSetAssets;
 import static com.company.GrabUrls.grabPhotoInfo;
 import static com.company.GrabUrls.grabCollectionMetadata;
 import static com.company.GrabUrls.grabUserId;
-import static com.company.WriteFiles.writeAssets;
 
 public class CollectionActions {
 
-    public static void extractCollectionInfo() {
+    private WriteFiles fileWriter = new WriteFiles();
+
+    public void extractCollectionInfo() {
         Scanner collectionURLPrompt = new Scanner(System.in);
         System.out.println("Please provide a collection url: ");
         String collectionURL = collectionURLPrompt.next();
@@ -28,27 +30,21 @@ public class CollectionActions {
 
         try {
             String userId = grabUserId(collectionURL);
-            String collectionId = parseCollectionURL(collectionURL);
+            String collectionId = parseIdFromURL(collectionURL);
             String jsonInfo = grabCollectionMetadata(collectionURL, collectionId, userId);
 
             ArrayList<JSONObject> assets = extractAssetInfo(jsonInfo, userId);
-            writeAssets(collectionId, assets);
+            fileWriter.writeAssets(collectionId, assets);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static boolean validateCollectionURL(String collectionURL) {
+    private boolean validateCollectionURL(String collectionURL) {
         return true;
     }
 
-    private static String parseCollectionURL(String collectionURL){
-        String elements[] = collectionURL.split("/");
-        String collectionId = elements[elements.length-1];
-        return collectionId;
-    }
-
-    private static ArrayList<JSONObject> extractAssetInfo(String collectionJson, String userId) throws IOException {
+    private ArrayList<JSONObject> extractAssetInfo(String collectionJson, String userId) throws IOException {
         JSONObject info = new JSONObject(collectionJson);
         JSONArray collections = info.getJSONObject("collections").getJSONArray("collection");
 

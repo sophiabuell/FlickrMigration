@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import static com.company.GrabUrls.grabPhotoSize;
 
 public class WriteFiles {
-    public static String formatPhotoCSVLine(JSONObject asset) throws IOException {
+    public String formatPhotoCSVLine(JSONObject asset) throws IOException {
         JSONObject photo = asset.getJSONObject("photo");
 
         // Get Height and Width
@@ -31,7 +31,7 @@ public class WriteFiles {
         return String.format("%s, %s, %s, %d, %d, %s \n", id, created, title, width, height, photoUrl);
     }
 
-    public static void writeAssets(String collectionId, ArrayList<JSONObject> assets) throws IOException {
+    public void writeAssets(String collectionId, ArrayList<JSONObject> assets) throws IOException {
 
         // CREATE AND WRITE FILE
         File metadataFile = new File("metadata/" + collectionId + "_metadata.csv");
@@ -41,21 +41,24 @@ public class WriteFiles {
             metadataFolder.mkdir();
         }
 
-        metadataFile.createNewFile();
-        FileWriter writer = new FileWriter("metadata/"+collectionId+"_metadata.csv");
+        if (metadataFile.createNewFile()) {
+            FileWriter writer = new FileWriter("metadata/" + collectionId + "_metadata.csv");
 
-        // Write csv template line
-        writer.write("id, created, title, width, height, url \n");
+            // Write csv template line
+            writer.write("id, created, title, width, height, url \n");
 
-        // Write data line for each asset
-        System.out.println(String.format("Writing assets to file %s...", metadataFile.getName()));
-        int assetCount = 1;
-        for (JSONObject asset : assets) {
-            System.out.println(String.format("    Writing asset %d of %d...", assetCount, assets.size()));
-            writer.write(formatPhotoCSVLine(asset));
-            assetCount++;
+            // Write data line for each asset
+            System.out.println(String.format("Writing assets to file %s...", metadataFile.getName()));
+            int assetCount = 1;
+            for (JSONObject asset : assets) {
+                System.out.println(String.format("    Writing asset %d of %d...", assetCount, assets.size()));
+                writer.write(formatPhotoCSVLine(asset));
+                assetCount++;
+            }
+            System.out.println("DONE.");
+            writer.close();
+        } else {
+            System.out.println("Error creating file " + metadataFile.getName());
         }
-        System.out.println("DONE.");
-        writer.close();
     }
 }

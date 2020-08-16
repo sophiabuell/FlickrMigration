@@ -47,12 +47,12 @@ public class GrabUrls {
         return content.toString();
     }
 
-    public static String grabUserId(String collectionURL) throws IOException {
+    public static String grabUserId(String assetURL) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, FLICKR_URLS_LOOKUP_USER,
                 API_KEY_PARAM, API_KEY_VALUE,
-                URL_PARAM, collectionURL,
+                URL_PARAM, assetURL,
                 FORMAT_JSON));
         String response = getResponse(url);
 
