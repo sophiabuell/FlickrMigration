@@ -22,7 +22,7 @@ public class PhotoAsset {
         this.id = id;
         this.created = photoObject.getJSONObject("dates").getString("posted");
         this.title = photoObject.getJSONObject("title").getString("_content").replaceAll(",", "");
-        this.url = largestPhotoObject.getString("url");
+        this.url = largestPhotoObject.getString("source");
         this.height = largestPhotoObject.getInt("height");
         this.width = largestPhotoObject.getInt("width");
     }
@@ -39,5 +39,9 @@ public class PhotoAsset {
     public boolean download() {
         // TODO
         return true;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }
