@@ -24,7 +24,7 @@ public class WriteFiles {
         String id = photo.getString("id");
         String created = photo.getJSONObject("dates").getString("posted");
         String title = photo.getJSONObject("title").getString("_content").replaceAll(",", "");
-        String photoUrl = photo.getJSONObject("urls").getJSONArray("url").getJSONObject(0).getString("_content");
+        String photoUrl = size.getString("url");
         int width = size.getInt("width");
         int height = size.getInt("height");
 
