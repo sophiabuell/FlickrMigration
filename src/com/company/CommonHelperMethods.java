@@ -1,8 +1,5 @@
 package com.company;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 public class CommonHelperMethods {
 
     public static String parseIdFromURL(String collectionURL){

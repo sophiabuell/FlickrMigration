@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import static com.company.CommonHelperMethods.parseIdFromURL;
-import static com.company.GrabUrls.grabPhotoSetAssets;
-import static com.company.GrabUrls.grabUserId;
+import static com.company.FlickrAPIEndpoints.listAlbumPhotos;
+import static com.company.FlickrAPIEndpoints.lookupUser;
 
 public class AlbumActions {
 
@@ -21,9 +21,9 @@ public class AlbumActions {
             return;
         }
         try {
-            String userId = grabUserId(albumURL);
+            String userId = lookupUser(albumURL);
             String albumId = parseIdFromURL(albumURL);
-            JSONArray assets = grabPhotoSetAssets(albumId, userId);
+            JSONArray assets = listAlbumPhotos(albumId, userId);
             System.out.println("Getting photos for album...");
             for (int i = 0; i < assets.length(); i++) {
                 System.out.print(String.format("Getting info for photo %d of %d... ", i, assets.length()));

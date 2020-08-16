@@ -5,8 +5,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import static com.company.GrabUrls.grabPhotoInfo;
-import static com.company.GrabUrls.grabPhotoSize;
+import static com.company.FlickrAPIEndpoints.getPhotoInfo;
+import static com.company.FlickrAPIEndpoints.getPhotoSizes;
 
 public class PhotoAsset {
     private String url;
@@ -17,8 +17,8 @@ public class PhotoAsset {
     private String created;
 
     PhotoAsset(String id) throws IOException {
-        JSONObject photoObject = grabPhotoInfo(id).getJSONObject("photo");
-        JSONObject largestPhotoObject =  getLargestPhotoSizeObject(grabPhotoSize(id));
+        JSONObject photoObject = getPhotoInfo(id).getJSONObject("photo");
+        JSONObject largestPhotoObject =  getLargestPhotoSizeObject(getPhotoSizes(id));
         this.id = id;
         this.created = photoObject.getJSONObject("dates").getString("posted");
         this.title = photoObject.getJSONObject("title").getString("_content").replaceAll(",", "");

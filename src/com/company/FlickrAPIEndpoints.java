@@ -9,7 +9,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class GrabUrls {
+public class FlickrAPIEndpoints {
+
+    // TODO: Write method to format regex for url string generically
+
     private static final String API_KEY_VALUE = "ee684ec62c0fa830c6ce9d0847f50613";
     private static final String BASE_URL = "https://www.flickr.com/services/rest/";
 
@@ -32,7 +35,7 @@ public class GrabUrls {
     // JSON format
     private static final String FORMAT_JSON = "format=json";
 
-    private static String getResponse(URL url) throws IOException {
+    private static String getAndParseResponse(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         BufferedReader in = new BufferedReader(
@@ -47,14 +50,14 @@ public class GrabUrls {
         return content.toString();
     }
 
-    public static String grabUserId(String assetURL) throws IOException {
+    public static String lookupUser(String assetURL) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, FLICKR_URLS_LOOKUP_USER,
                 API_KEY_PARAM, API_KEY_VALUE,
                 URL_PARAM, assetURL,
                 FORMAT_JSON));
-        String response = getResponse(url);
+        String response = getAndParseResponse(url);
 
         // Parse out userID from response
         response = response.split(":")[2];
@@ -63,7 +66,7 @@ public class GrabUrls {
         return user;
     }
 
-    public static String grabCollectionMetadata(String collectionURL, String collectionId, String userId) throws IOException {
+    public static String getCollectionTree(String collectionURL, String collectionId, String userId) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, COLLECTIONS_GET_TREE,
@@ -72,12 +75,12 @@ public class GrabUrls {
                 USER_ID_PARAM, userId,
                 FORMAT_JSON));
 
-        String content = getResponse(url);
+        String content = getAndParseResponse(url);
         String jsonString = content.substring(14, content.length()-1);
         return jsonString;
     }
 
-    public static JSONArray grabPhotoSetAssets(String photoSetId, String userId) throws IOException {
+    public static JSONArray listAlbumPhotos(String photoSetId, String userId) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, GET_PHOTOS,
@@ -85,21 +88,21 @@ public class GrabUrls {
                 PHOTOSET_ID_PARAM, photoSetId,
                 USER_ID_PARAM, userId,
                 FORMAT_JSON));
-        String response = getResponse(url);
+        String response = getAndParseResponse(url);
         response = response.substring(14, response.length()-1);
 
         JSONObject photoSet = new JSONObject(response);
         return photoSet.getJSONObject("photoset").getJSONArray("photo");
     }
 
-    public static JSONObject grabPhotoInfo(String id) throws IOException {
+    public static JSONObject getPhotoInfo(String id) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, PHOTOS_GET_INFO,
                 API_KEY_PARAM, API_KEY_VALUE,
                 PHOTO_ID_PARAM, id,
                 FORMAT_JSON));
-        String response = getResponse(url);
+        String response = getAndParseResponse(url);
 
         String jsonString = response.substring(14, response.length()-1);
         return new JSONObject(jsonString);
@@ -107,14 +110,14 @@ public class GrabUrls {
 
 
 
-    public static JSONObject grabPhotoSize(String id) throws IOException {
+    public static JSONObject getPhotoSizes(String id) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, PHOTOS_GET_SIZES,
                 API_KEY_PARAM, API_KEY_VALUE,
                 PHOTO_ID_PARAM, id,
                 FORMAT_JSON));
-        String photoSizeResponse = getResponse(url);
+        String photoSizeResponse = getAndParseResponse(url);
         photoSizeResponse = photoSizeResponse.substring(14, photoSizeResponse.length()-1);
         return new JSONObject(photoSizeResponse);
     }

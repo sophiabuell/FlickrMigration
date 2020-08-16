@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import static com.company.CommonHelperMethods.parseIdFromURL;
-import static com.company.GrabUrls.grabPhotoSetAssets;
-import static com.company.GrabUrls.grabCollectionMetadata;
-import static com.company.GrabUrls.grabUserId;
+import static com.company.FlickrAPIEndpoints.listAlbumPhotos;
+import static com.company.FlickrAPIEndpoints.getCollectionTree;
+import static com.company.FlickrAPIEndpoints.lookupUser;
 
 public class CollectionActions {
 
@@ -28,9 +28,9 @@ public class CollectionActions {
         }
 
         try {
-            String userId = grabUserId(collectionURL);
+            String userId = lookupUser(collectionURL);
             String collectionId = parseIdFromURL(collectionURL);
-            String jsonInfo = grabCollectionMetadata(collectionURL, collectionId, userId);
+            String jsonInfo = getCollectionTree(collectionURL, collectionId, userId);
 
             ArrayList<PhotoAsset> assets = extractAssetInfo(jsonInfo, userId);
             writeCSV(collectionId, assets);
@@ -55,7 +55,7 @@ public class CollectionActions {
             String photoSetId = asset.getString("id");
 
             System.out.println(String.format("    Getting asset info for photoSet %d of %d...", i+1, assets.length()));
-            JSONArray photos = grabPhotoSetAssets(photoSetId, userId);
+            JSONArray photos = listAlbumPhotos(photoSetId, userId);
 
             ArrayList<PhotoAsset> albumAssets = new ArrayList<>();
             for (int j = 0; j < photos.length(); j++) {
