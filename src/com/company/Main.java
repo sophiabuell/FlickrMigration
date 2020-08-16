@@ -1,6 +1,5 @@
 package com.company;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -13,11 +12,6 @@ import static com.company.Helpers.parseCollectionURL;
 import static com.company.WriteFiles.writeAssets;
 
 public class Main {
-    static final String API_KEY = "ee684ec62c0fa830c6ce9d0847f50613";
-    static final String baseURL = " https://www.flickr.com/services/rest/";
-
-
-
 
     public static void main(String[] args) {
 	// write your code here

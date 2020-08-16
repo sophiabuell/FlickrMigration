@@ -14,18 +14,20 @@ public class WriteFiles {
     public static String formatPhotoCSVLine(JSONObject asset) throws IOException {
         JSONObject photo = asset.getJSONObject("photo");
 
+        // Get Height and Width
+        String response = grabSize(photo.getString("id"));
+        String jsonString = response.substring(14, response.length()-1);
+        JSONArray photoSizes = new JSONObject(jsonString).getJSONObject("sizes").getJSONArray("size");
+        JSONObject size = photoSizes.getJSONObject(photoSizes.length()-1);
+
+        // Set Values
         String id = photo.getString("id");
         String created = photo.getJSONObject("dates").getString("posted");
         String title = photo.getJSONObject("title").getString("_content").replaceAll(",", "");
         String photoUrl = photo.getJSONObject("urls").getJSONArray("url").getJSONObject(0).getString("_content");
-
-        // Get Height and Width
-        String response = grabSize(id);
-        String jsonString = response.substring(14, response.length()-1);
-        JSONArray photoSizes = new JSONObject(jsonString).getJSONObject("sizes").getJSONArray("size");
-        JSONObject size = photoSizes.getJSONObject(photoSizes.length()-1);
         int width = size.getInt("width");
         int height = size.getInt("height");
+
         return String.format("%s, %s, %s, %d, %d, %s \n", id, created, title, width, height, photoUrl);
     }
 
@@ -34,17 +36,26 @@ public class WriteFiles {
         // CREATE AND WRITE FILE
         File metadataFile = new File("metadata/" + collectionId + "_metadata.csv");
         File metadataFolder = new File("metadata");
+
         if (!metadataFolder.exists()) {
-            System.out.println("creatingDirectory" + metadataFolder.getAbsolutePath());
             metadataFolder.mkdir();
         }
+
         metadataFile.createNewFile();
-        System.out.println("created file" + metadataFile.getAbsolutePath());
         FileWriter writer = new FileWriter("metadata/"+collectionId+"_metadata.csv");
+
+        // Write csv template line
         writer.write("id, created, title, width, height, url \n");
+
+        // Write data line for each asset
+        System.out.println(String.format("Writing assets to file %s...", metadataFile.getName()));
+        int assetCount = 1;
         for (JSONObject asset : assets) {
+            System.out.println(String.format("    Writing asset %d of %d...", assetCount, assets.size()));
             writer.write(formatPhotoCSVLine(asset));
+            assetCount++;
         }
+        System.out.println("DONE.");
         writer.close();
     }
 }
