@@ -66,7 +66,7 @@ public class FlickrAPIEndpoints {
         return user;
     }
 
-    public static String getCollectionTree(String collectionURL, String collectionId, String userId) throws IOException {
+    public static String getCollectionTree(String collectionId, String userId) throws IOException {
         URL url = new URL(String.format("%s?%s=%s&%s=%s&%s=%s&%s=%s&%s",
                 BASE_URL,
                 METHOD_PARAM, COLLECTIONS_GET_TREE,

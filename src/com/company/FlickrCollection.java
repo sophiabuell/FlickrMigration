@@ -6,65 +6,59 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-import static com.company.CommonHelperMethods.getURLInput;
 import static com.company.CommonHelperMethods.parseIdFromURL;
-import static com.company.FlickrAPIEndpoints.listAlbumPhotos;
 import static com.company.FlickrAPIEndpoints.getCollectionTree;
 import static com.company.FlickrAPIEndpoints.lookupUser;
 
 public class FlickrCollection {
 
-    public void extractCollectionInfo() {
-        String collectionURL = getURLInput();
+    private String collectionId;
+    private ArrayList<FlickrAlbum> albums = new ArrayList<>();
+    private String DIR_PATH = "metadata";
+    private String userId;
 
+    FlickrCollection(String collectionUrl) throws IOException {
+        collectionId = parseIdFromURL(collectionUrl);
+        userId = lookupUser(collectionUrl);
+    }
+
+    public void populate() {
         try {
-            String userId = lookupUser(collectionURL);
-            String collectionId = parseIdFromURL(collectionURL);
-            String jsonInfo = getCollectionTree(collectionURL, collectionId, userId);
+            JSONObject jsonInfo = new JSONObject(getCollectionTree(collectionId, userId));
+            JSONArray collections = jsonInfo.getJSONObject("collections").getJSONArray("collection");
 
-            ArrayList<PhotoAsset> assets = extractAssetInfo(jsonInfo, userId);
-            writeCSV(collectionId, assets);
+            JSONArray assets = collections.getJSONObject(0).getJSONArray("set");
+            System.out.println("Getting photoSet assets...");
+            for (int i = 0; i < assets.length(); i++) {
+                System.out.println(String.format("    Getting asset info for photoSet %d of %d...", i+1, assets.length()));
+                JSONObject asset = assets.getJSONObject(i);
+                String photoSetId = asset.getString("id");
+                FlickrAlbum album = new FlickrAlbum(photoSetId, userId);
+                album.populate();
+                albums.add(album);
+                System.out.println("DONE.");
+            }
+            System.out.println("DONE.");
+            writeCSV();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private ArrayList<PhotoAsset> extractAssetInfo(String collectionJson, String userId) throws IOException {
-        JSONObject info = new JSONObject(collectionJson);
-        JSONArray collections = info.getJSONObject("collections").getJSONArray("collection");
-
-        JSONArray assets = collections.getJSONObject(0).getJSONArray("set");
-        ArrayList<PhotoAsset> assetsInfo = new ArrayList();
-        System.out.println("Getting photoSet assets...");
-        for (int i = 0; i < assets.length(); i++) {
-            JSONObject asset = assets.getJSONObject(i);
-            String photoSetId = asset.getString("id");
-
-            System.out.println(String.format("    Getting asset info for photoSet %d of %d...", i+1, assets.length()));
-            JSONArray photos = listAlbumPhotos(photoSetId, userId);
-
-            ArrayList<PhotoAsset> albumAssets = new ArrayList<>();
-            for (int j = 0; j < photos.length(); j++) {
-                String id = photos.getJSONObject(i).getString("id");
-                albumAssets.add(new PhotoAsset(id));
-            }
-            assetsInfo.addAll(albumAssets);
-        }
-        System.out.println("DONE.");
-        return assetsInfo;
-    }
-
-    public void writeCSV(String collectionId, ArrayList<PhotoAsset> assets) throws IOException {
+    public void writeCSV() throws IOException {
 
         // CREATE AND WRITE FILE
-        File metadataFile = new File("metadata/" + collectionId + "_metadata.csv");
-        File metadataFolder = new File("metadata");
+        File metadataFile = new File(String.format("%s/%s_metadata.csv", DIR_PATH, collectionId));
+        File metadataFolder = new File(DIR_PATH);
 
         if (!metadataFolder.exists()) {
             metadataFolder.mkdir();
+        }
+        if (metadataFile.exists() && !metadataFile.delete()) {
+            throw new FileAlreadyExistsException(metadataFile.getName());
         }
 
         if (metadataFile.createNewFile()) {
@@ -75,17 +69,18 @@ public class FlickrCollection {
 
             System.out.println(String.format("Writing assets to file %s...", metadataFile.getName()));
             int assetCount = 1;
-
-            for (PhotoAsset asset : assets) {
-                // Write data line for each asset
-                System.out.println(String.format("    Writing asset %d of %d...", assetCount, assets.size()));
-                writer.write(asset.printCSVLine());
-                assetCount++;
+            for (FlickrAlbum album : albums) {
+                for (PhotoAsset asset : album.getAlbumPhotos()) {
+                    // Write data line for each asset
+                    System.out.println(String.format("    Writing asset %d...", assetCount));
+                    writer.write(asset.printCSVLine());
+                    assetCount++;
+                }
             }
             System.out.println("DONE.");
             writer.close();
         } else {
-            System.out.println("Error creating file " + metadataFile.getName());
+            throw new IOException("Cannot create file " + metadataFile + ". CSV not written.");
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.company;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import static com.company.CommonHelperMethods.getURLInput;
 
 public class Main {
 
@@ -15,12 +18,21 @@ public class Main {
             int choice = input.nextInt();
             switch (choice) {
                 case 0:
-                    FlickrCollection flickrCollection = new FlickrCollection();
-                    flickrCollection.extractCollectionInfo();
+                    try {
+                        FlickrCollection flickrCollection = new FlickrCollection(getURLInput());
+                        flickrCollection.populate();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 1:
-                    FlickrAlbum flickrAlbum = new FlickrAlbum();
-                    flickrAlbum.batchDownloadAlbum();
+                    try {
+                        FlickrAlbum flickrAlbum = new FlickrAlbum(getURLInput());
+                        flickrAlbum.populate();
+                        flickrAlbum.batchDownloadAlbum();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2:
                     System.out.println("Thanks for playing come again soon!");
