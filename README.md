@@ -1,3 +1,3 @@
 # FlickrMigration
 ## Run program from terminal: 
-'''./runProgram.sh```
+```./runProgram.sh```
